@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-import models.cities
 from database import engine
-from routers import  cities
+from routers import cities
+from models import cities_model
+
 app = FastAPI()
 
-models.cities.Base.metadata.create_engine(bind=engine)
+cities_model.Base.metadata.create_all(bind=engine)
 
 app.include_router(cities.router)
