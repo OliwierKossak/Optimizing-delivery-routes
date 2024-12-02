@@ -1,4 +1,4 @@
-from ..database import Base
+from database import Base
 from sqlalchemy import Column, String, Integer
 
 class Cities(Base):
@@ -7,4 +7,4 @@ class Cities(Base):
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     start_node = Column(String, nullable=False)
     end_node = Column(String, nullable=False)
-    distance = (Integer)
+    distance = Column(Integer)
