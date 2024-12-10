@@ -5,6 +5,8 @@ from pydantic import BaseModel, Field
 from typing import Annotated, Optional
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordRequestForm
+from models.user import User
 
 router = APIRouter(
     prefix='/auth',
