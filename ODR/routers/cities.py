@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 router = APIRouter(
     prefix='/cities',
-    tags=['auth']
+    tags=['city']
 )
 
 db_dependency = Annotated[Session, Depends(get_db)]
