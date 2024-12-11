@@ -1,5 +1,5 @@
 venv
 .idea
 ODR/todosapp.db
-ODR/routers/__pycache__/auth.cpython-310.pyc
-ODR/routers/__pycache__/cities.cpython-310.pyc
+.ODR/routers/__pycache__/auth.cpython-310.pyc
+.ODR/routers/__pycache__/cities.cpython-310.pyc
