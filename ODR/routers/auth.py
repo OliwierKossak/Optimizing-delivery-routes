@@ -48,6 +48,7 @@ def create_access_token(email: str, id: int, expires_delta: timedelta):
     encode = {'sub': email, 'id': id}
     expires = datetime.now(timezone.utc) + expires_delta
     encode.update({'exp': expires})
+    print(encode)
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORYTHIM)
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
@@ -55,11 +56,13 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORYTHIM])
         email: str = payload.get('sub')
         id: int = payload.get('id')
-        if email or id is None:
+        print("payload", payload, email, id)
+        if email is None or id is None:
+            print("email or id none")
             raise HTTPException(status_code=401, detail='Could not validate user.')
-
         return {'email': email, 'id': id}
     except JWTError:
+        print("JWTerror token")
         raise HTTPException(status_code=401, detail='Could not validate user.')
 
 @router.post("/create_user", status_code=status.HTTP_201_CREATED)
