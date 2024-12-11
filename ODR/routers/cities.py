@@ -4,7 +4,6 @@ from models.cities_model import Cities
 from pydantic import BaseModel, Field
 from typing import Annotated, Optional
 from sqlalchemy.orm import Session
-from .auth import get_current_user
 
 router = APIRouter(
     prefix='/cities',
@@ -12,7 +11,6 @@ router = APIRouter(
 )
 
 db_dependency = Annotated[Session, Depends(get_db)]
-user_dependency = Annotated[dict, Depends(get_current_user)]
 
 class CityRequest(BaseModel):
     start_node : str
@@ -32,9 +30,7 @@ async def get_city_by_id(db: db_dependency, city_id: int = Path(gt=0)):
     raise HTTPException(status_code=404, detail='city not found')
 
 @router.get('/get_all_cities', status_code=status.HTTP_200_OK)
-async def get_all_cities(user: user_dependency, db: db_dependency):
-    if user is None:
-        raise HTTPException(status_code=401, detail='Authentication Failed')
+async def get_all_cities(db: db_dependency):
     cities = db.query(Cities).all()
     if cities is not None:
         return cities
