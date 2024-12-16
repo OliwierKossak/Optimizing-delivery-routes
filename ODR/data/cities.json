@@ -1,0 +1,32 @@
+[
+  {
+    "start_node": "A",
+    "end_node": "B",
+    "distance": 10
+  },
+  {
+    "start_node": "B",
+    "end_node": "A",
+    "distance": 10
+  },
+  {
+    "start_node": "A",
+    "end_node": "C",
+    "distance": 25
+  },
+  {
+    "start_node": "C",
+    "end_node": "A",
+    "distance": 25
+  },
+  {
+    "start_node": "B",
+    "end_node": "C",
+    "distance": 17
+  },
+  {
+    "start_node": "C",
+    "end_node": "B",
+    "distance": 17
+  }
+]
