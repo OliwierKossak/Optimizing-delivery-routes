@@ -1,0 +1,18 @@
+[
+  {
+  "email": "string",
+  "first_name": "john",
+  "last_name": "Surname",
+  "hashed_password": "string",
+  "is_active": true,
+  "role": "admin"
+  },
+  {
+  "email": "string2",
+  "first_name": "thomas",
+  "last_name": "Jonson",
+  "hashed_password": "string",
+  "is_active": true,
+  "role": "user"
+  }
+]
