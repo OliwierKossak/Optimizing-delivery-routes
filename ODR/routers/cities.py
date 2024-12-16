@@ -4,6 +4,7 @@ from models.cities_model import Cities
 from pydantic import BaseModel, Field
 from typing import Annotated, Optional
 from sqlalchemy.orm import Session
+from .auth import get_current_user
 
 router = APIRouter(
     prefix='/cities',
@@ -11,6 +12,7 @@ router = APIRouter(
 )
 
 db_dependency = Annotated[Session, Depends(get_db)]
+user_dependency = Annotated[dict, Depends(get_current_user)]
 
 class CityRequest(BaseModel):
     start_node : str
@@ -23,40 +25,52 @@ class CityUpdate(BaseModel):
     distance: Optional[int] = Field(None, gt=0)
 
 @router.get("/city/{city_id}", status_code=status.HTTP_200_OK)
-async def get_city_by_id(db: db_dependency, city_id: int = Path(gt=0)):
+async def get_city_by_id(user:user_dependency, db: db_dependency, city_id: int = Path(gt=0)):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed')
     city = db.query(Cities).filter(Cities.id == city_id).first()
     if city is not None:
         return city
     raise HTTPException(status_code=404, detail='city not found')
 
 @router.get('/get_all_cities', status_code=status.HTTP_200_OK)
-async def get_all_cities(db: db_dependency):
+async def get_all_cities(user:user_dependency, db: db_dependency):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed')
     cities = db.query(Cities).all()
     if cities is not None:
         return cities
     raise HTTPException(status_code=404, detail='No cities in db')
 
 @router.get('/city_routs/{city_name}', status_code=status.HTTP_200_OK)
-async def get_city_routs(db: db_dependency, city_name: str):
+async def get_city_routs(user:user_dependency, db: db_dependency, city_name: str):
     # add start city end city and all routs
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed')
     city_routs = db.query(Cities).filter(Cities.start_node == city_name).all()
     if city_routs is not None:
         return city_routs
     raise HTTPException(status_code=404, detail='cities routs not found')
 
 @router.post("/add_new_city", status_code=status.HTTP_201_CREATED)
-async def add_new_city(db:db_dependency, city_request: CityRequest):
+async def add_new_city(user:user_dependency, db:db_dependency, city_request: CityRequest):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed')
     city_model = Cities(**city_request.dict())
     db.add(city_model)
     db.commit()
 
 @router.post("/add_multiple_cities", status_code=status.HTTP_201_CREATED)
-async def add_multiple_cities(db:db_dependency, cities: list[CityRequest]):
+async def add_multiple_cities(user:user_dependency, db:db_dependency, cities: list[CityRequest]):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed')
     db.add_all([Cities(**city.dict()) for city in cities])
     db.commit()
 
 @router.put("/update_city/{city_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_city(db: db_dependency, city: CityUpdate, city_id : int = Path(gt=0)):
+async def update_city(user:user_dependency, db: db_dependency, city: CityUpdate, city_id : int = Path(gt=0)):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed')
     city_model = db.query(Cities).filter(Cities.id == city_id).first()
     if city_model is None:
         raise HTTPException(status_code=404, detail='city routs not found')
@@ -71,7 +85,9 @@ async def update_city(db: db_dependency, city: CityUpdate, city_id : int = Path(
     db.refresh(city_model)
 
 @router.delete("/delete_city/{city_name}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_city_with_all_routs(db: db_dependency, city_name: str):
+async def delete_city_with_all_routs(user:user_dependency, db: db_dependency, city_name: str):
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication Failed')
     city_routs = db.query(Cities).filter((Cities.start_node == city_name) | (Cities.end_node == city_name)).all()
 
     if city_routs is None:
